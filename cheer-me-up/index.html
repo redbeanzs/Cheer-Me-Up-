@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cheer Me Up is a mood-tracking wellness app with uplifting content, favorites, and simple mood trends.">
+  <title>Cheer Me Up</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fredoka:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+  <script src="config.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Cheer Me Up home">
+      <span class="brand-mark" aria-hidden="true">☀</span>
+      <span>Cheer Me Up</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#boost">Get a boost</a>
+      <a href="#favorites">Favorites</a>
+      <a href="#trends">Mood trends</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero section-shell">
+      <div class="hero-copy">
+        <p class="eyebrow">A tiny reset for a hard day</p>
+        <h1>How are you feeling right now?</h1>
+        <p class="hero-text">Log your mood, get something uplifting, and save the things that actually help.</p>
+
+        <div class="mood-picker" role="group" aria-label="Choose your mood">
+          <button class="mood-option" type="button" data-mood="1" aria-label="Very low mood">
+            <span aria-hidden="true">😞</span><small>Very low</small>
+          </button>
+          <button class="mood-option" type="button" data-mood="2" aria-label="Low mood">
+            <span aria-hidden="true">🙁</span><small>Low</small>
+          </button>
+          <button class="mood-option" type="button" data-mood="3" aria-label="Okay mood">
+            <span aria-hidden="true">😐</span><small>Okay</small>
+          </button>
+          <button class="mood-option" type="button" data-mood="4" aria-label="Good mood">
+            <span aria-hidden="true">🙂</span><small>Good</small>
+          </button>
+          <button class="mood-option" type="button" data-mood="5" aria-label="Great mood">
+            <span aria-hidden="true">😁</span><small>Great</small>
+          </button>
+        </div>
+
+        <div class="mood-note-wrap">
+          <label for="mood-note">Optional note</label>
+          <textarea id="mood-note" maxlength="180" placeholder="What is affecting your mood today?"></textarea>
+          <div class="note-footer">
+            <span id="note-count">0/180</span>
+            <button class="button button-primary" id="save-mood" type="button" disabled>Save mood</button>
+          </div>
+        </div>
+        <p class="status-message" id="mood-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <aside class="hero-card" aria-label="Daily encouragement">
+        <div class="sun-orbit" aria-hidden="true">
+          <span class="sun">☀</span>
+          <span class="orbit-dot orbit-one"></span>
+          <span class="orbit-dot orbit-two"></span>
+          <span class="orbit-dot orbit-three"></span>
+        </div>
+        <p>Bad days do not erase your progress.</p>
+        <span>One small reset still counts.</span>
+      </aside>
+    </section>
+
+    <section class="section-shell section-block" id="boost">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Mood boost</p>
+          <h2>Pick what you need.</h2>
+        </div>
+        <button class="button button-secondary" id="refresh-all" type="button">Refresh everything</button>
+      </div>
+
+      <div class="boost-grid">
+        <article class="content-card" data-card-type="quote">
+          <div class="card-topline">
+            <span class="card-icon" aria-hidden="true">💬</span>
+            <span>Quote</span>
+          </div>
+          <p class="card-content" id="quote-text">Loading something encouraging...</p>
+          <p class="card-meta" id="quote-author"></p>
+          <div class="card-actions">
+            <button class="icon-button refresh-card" type="button" data-type="quote" aria-label="Get a new quote">↻</button>
+            <button class="icon-button favorite-card" type="button" data-type="quote" aria-label="Save quote to favorites">♡</button>
+          </div>
+        </article>
+
+        <article class="content-card" data-card-type="advice">
+          <div class="card-topline">
+            <span class="card-icon" aria-hidden="true">✨</span>
+            <span>Advice</span>
+          </div>
+          <p class="card-content" id="advice-text">Loading a helpful thought...</p>
+          <div class="card-actions">
+            <button class="icon-button refresh-card" type="button" data-type="advice" aria-label="Get new advice">↻</button>
+            <button class="icon-button favorite-card" type="button" data-type="advice" aria-label="Save advice to favorites">♡</button>
+          </div>
+        </article>
+
+        <article class="content-card" data-card-type="cat">
+          <div class="card-topline">
+            <span class="card-icon" aria-hidden="true">🐈</span>
+            <span>Cat fact</span>
+          </div>
+          <p class="card-content" id="cat-text">Loading a tiny cat fact...</p>
+          <div class="card-actions">
+            <button class="icon-button refresh-card" type="button" data-type="cat" aria-label="Get a new cat fact">↻</button>
+            <button class="icon-button favorite-card" type="button" data-type="cat" aria-label="Save cat fact to favorites">♡</button>
+          </div>
+        </article>
+
+        <article class="content-card dog-card" data-card-type="dog">
+          <div class="card-topline dog-topline">
+            <span class="card-icon" aria-hidden="true">🐕</span>
+            <span>Dog break</span>
+          </div>
+          <div class="dog-image-wrap">
+            <img id="dog-image" alt="A randomly selected dog" loading="lazy">
+          </div>
+          <div class="card-actions">
+            <button class="icon-button refresh-card" type="button" data-type="dog" aria-label="Show a new dog">↻</button>
+            <button class="icon-button favorite-card" type="button" data-type="dog" aria-label="Save dog image to favorites">♡</button>
+          </div>
+        </article>
+      </div>
+      <p class="status-message" id="content-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="section-shell section-block" id="favorites">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Your saved boosts</p>
+          <h2>Come back to what helped.</h2>
+        </div>
+        <button class="button button-quiet" id="clear-favorites" type="button">Clear favorites</button>
+      </div>
+      <div class="favorites-grid" id="favorites-grid"></div>
+      <div class="empty-state" id="favorites-empty">
+        <span aria-hidden="true">♡</span>
+        <p>Your saved favorites will appear here.</p>
+      </div>
+    </section>
+
+    <section class="section-shell section-block" id="trends">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Mood trends</p>
+          <h2>Notice patterns without judging them.</h2>
+        </div>
+        <button class="button button-quiet" id="clear-moods" type="button">Clear mood history</button>
+      </div>
+
+      <div class="trend-layout">
+        <div class="chart-card">
+          <canvas id="mood-chart" aria-label="Line chart showing recent mood scores" role="img"></canvas>
+        </div>
+        <div class="history-card">
+          <h3>Recent check-ins</h3>
+          <div id="mood-history" class="mood-history"></div>
+          <div class="empty-state compact" id="moods-empty">
+            <span aria-hidden="true">☁</span>
+            <p>Log a mood to start your trend.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Built with care, APIs, and a little sunshine.</p>
+    <p class="privacy-note">Your data stays in this browser unless you connect Supabase.</p>
+  </footer>
+
+  <template id="favorite-template">
+    <article class="favorite-item">
+      <div>
+        <span class="favorite-type"></span>
+        <p class="favorite-content"></p>
+      </div>
+      <button class="icon-button remove-favorite" type="button" aria-label="Remove favorite">×</button>
+    </article>
+  </template>
+</body>
+</html>
